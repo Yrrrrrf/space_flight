@@ -1,0 +1,23 @@
+[package]
+name = "space_flight"
+version = "0.1.0"
+edition = "2021"
+license = "MIT License"
+authors = ["Yrrrrrf"]
+description = "Space Flight Game"
+
+
+[profile.dev]
+opt-level = 1  # Optimize for speed in debug mode
+
+[profile.dev.package."*"]
+opt-level = 3  # Optimize all dependencies in debug mode
+
+
+[dependencies]
+bevy = "0.10.0"
+winit = "0.28.3"
+image = "0.24.6"
+serde = { version = "1.0.130", features = ["derive"] }
+rand = "0.8.5"
+
