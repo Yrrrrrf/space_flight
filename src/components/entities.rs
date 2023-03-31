@@ -1,9 +1,6 @@
-/* 
-    This file contains the Structs and Enums used in the game
-    - entity
-        - player
-        - enemy
-*/
+//! Entities module
+//! 
+//! Contains the entity types and the entity struct
 
 
 pub trait Entity {

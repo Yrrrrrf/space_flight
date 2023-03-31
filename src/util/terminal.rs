@@ -1,8 +1,7 @@
 // ? util methods for (any) rust code
 
 use::std::io;  // io library is part of the standard library (std)
-use::std::io::Write;  // io library is part of the standard library (std) (Write trait)
-use::std::io::Read;
+use::std::io::{Write, Read};
 use std::str::FromStr;  // io library is part of the standard library (std) (Read trait)
 
 
@@ -21,6 +20,14 @@ pub (crate) fn print_type_of<T>(_: &T) {
     println!("{}", std::any::type_name::<T>())
 }
 
+
+/// Return the type of a variable as a string
+/// 
+/// ### Parameters:
+/// - `_: &T` - The variable to get the type of
+/// 
+/// ### Returns:
+/// - [`String`] - The type of the variable
 pub (crate) fn get_type_of<T>(_: &T) -> String {
     return std::any::type_name::<T>().to_string();
 }
@@ -36,6 +43,13 @@ pub (crate) fn clear() {
 
 
 /// Return a string with the color set
+/// 
+/// ### Parameters:
+/// - `string`: `&str` - The string to color
+/// - `fg`: `&str` - The foreground color
+/// 
+/// ### Returns:
+/// - [`String`] - The colored string
 pub (crate) fn set_fg(string: &str, fg: &str) -> String {  // Set background color
     match fg {  // Color in Terminal
         "r" | "red"   => return format!("\x1b[31m{}\x1b[0m", string),  // Red
@@ -50,6 +64,13 @@ pub (crate) fn set_fg(string: &str, fg: &str) -> String {  // Set background col
 
 
 /// Return a string with the foreground color set
+/// 
+/// ### Parameters:
+/// - `string` - String to be colored
+/// - `fg` - Foreground color
+/// 
+/// ### Returns:
+/// - [`String`] - String with the color set
 pub (crate) fn set_bg(string: &str, fg: &str) -> String {  // Set background color
     match fg {  // Color in Terminal
         "r" | "red"   => return format!("\x1b[41m{}\x1b[0m", string),  // Red

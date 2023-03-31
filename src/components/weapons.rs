@@ -1,30 +1,19 @@
-/* 
-Weapons
+//! Weapons module
+//! 
+//! Contains the weapon types and the weapon struct
+//! ALL weapons stats are defined here
 
-This file contains the weapons that the Entities can use
-*/
 
 
-// #[derive(Clone, Copy, Debug)]
-//  implement the Sized trait
-//  the Sized trait is automatically implemented on all types that have a known size at compile time
-//  types that do not have a known size include slices and trait objects
-//  the Sized trait is used to indicate that a type has a known size at compile time
-
-use std::{collections::HashMap, fmt, fmt::Debug};
+use std::{collections::HashMap, fmt, fmt::Debug, default};
 
 use crate::util::terminal;
 
 
-
-#[derive(Debug, Clone)]
+#[derive(Default, Debug, Clone, PartialEq)]
 pub struct Weapon {
     w_type: WeaponType,  // The type defines the weapon characteristics
-    damage:u16,  // damage per shot
-    cadence: u16,  // shots per second
-    magazine: u16, // current magazine
-    magazine_size: u16,  // max magazine size
-    reload_time: u16,  // time to reload
+    current_magazine: u16,  // max magazine size
 }
 
 
@@ -36,15 +25,10 @@ impl Weapon {
     /// 
     /// ### Returns:
     /// - `Weapon` - The new weapon
-    pub fn new(w_type: WeaponType) -> Weapon {
-        let stats: HashMap<String, u16> = w_type.get_stats();
+    pub fn new(weapon_type: &WeaponType) -> Weapon {
         return Weapon {
-            w_type: w_type,
-            damage: stats.get("damage").unwrap().clone(),
-            cadence: stats.get("cadence").unwrap().clone(),
-            magazine_size: stats.get("magazine_size").unwrap().clone(),
-            magazine: stats.get("magazine_size").unwrap().clone(),
-            reload_time: stats.get("reload_time").unwrap().clone(),
+            w_type: weapon_type.clone(),
+            current_magazine: weapon_type.get_magazine_size(),
         }
     }
 
@@ -54,7 +38,7 @@ impl Weapon {
     /// ### Parameters:
     /// - `self`: `&mut Self` - The weapon to reload
     pub fn reload(&mut self) {
-        self.magazine = self.magazine_size;
+        self.current_magazine = self.w_type.get_magazine_size();
     }
 
 
@@ -68,8 +52,8 @@ impl Weapon {
     /// ### Returns:
     /// - `bool` - True if the magazine was reloaded
     pub fn reload_ammo(&mut self, ammo: u8) -> bool {
-        if self.magazine < self.magazine_size {  // if the magazine is not full
-            self.magazine += ammo as u16;  // add the ammo
+        if self.current_magazine < self.w_type.get_magazine_size() {  // if the magazine is not full
+            self.current_magazine += ammo as u16;  // add the ammo
             return true;  // return true
         }
         false  // return false
@@ -81,8 +65,8 @@ impl Weapon {
     /// ### Parameters:
     /// - `self`: `&mut Self` - The weapon to shoot
     pub fn shoot(&mut self) -> bool {
-        if self.magazine > 0 {
-            self.magazine -= 1;
+        if self.current_magazine > 0 {
+            self.current_magazine -= 1;
             return true;
         }
         false
@@ -97,50 +81,51 @@ impl Weapon {
     /// ### Returns:
     /// - `bool` - True if the weapon is loaded
     fn is_loaded(&self) -> bool {
-        return self.magazine > 0
+        return self.current_magazine > 0
     }
 
 }
 
 
 // create the weapons enum
-#[derive(Debug, Clone)]
+#[derive(Default, Clone, PartialEq)]
+/// The different types of weapons
 pub enum WeaponType {
-    Plasma,  // Default weapon
+    #[default]  // default weapon <Plasma>
+    Plasma,  // Shots a plasma ball
     Laser,  // Most cadence weapon
-    Railgun,  // Charge time
     Rocket,  // Splash damage
     Missile,  // Rocket with guidance
+    Railgun,  // Charge time
 }
 
 
 impl WeaponType {
     /// Get the stats of a weapon depending on its type
     /// 
+    /// ### Stats:
+    /// - damage: [u16]
+    /// - cadence: [u16]
+    /// - magazine_size: [u16]
+    /// - reload_time: [u16]
+    /// - *additional_stats (depends on weapon type)*
+    /// 
     /// ### Parameters:
     /// - `self`: `&Self` - The weapon type
     /// 
     /// ### Returns:
+    /// - [HashMap]<[String], [u16]> - The stats of the weapon
     pub fn get_stats(&self) -> HashMap<String, u16> {
         let mut stats: HashMap<String, u16> = HashMap::new();
-        match self {
-        _ | WeaponType::Plasma => {  // default weapon
-            stats.insert("damage".to_string(),          10);
-            stats.insert("cadence".to_string(),          3);
-            stats.insert("magazine_size".to_string(),   21);
-            stats.insert("reload_time".to_string(),      6);
-        },
-        WeaponType::Laser => {
-            stats.insert("damage".to_string(),           1);
-            stats.insert("cadence".to_string(),         40);
-            stats.insert("magazine_size".to_string(),  200);
-            stats.insert("reload_time".to_string(),      3); 
-            },
-        }
+        stats.insert("damage".to_string(), self.get_damage());
+        stats.insert("cadence".to_string(), self.get_cadence());
+        stats.insert("magazine_size".to_string(), self.get_magazine_size());
+        stats.insert("reload_time".to_string(), self.get_reload_time());
         return stats;
     }
-
-
+        
+        
+    /// Get the type of the weapon as a string
     /// 
     /// ### Parameters:
     /// - `self`: `&Self` - The weapon type
@@ -158,16 +143,74 @@ impl WeaponType {
     }
 
 
+    //? getters ---------------------------------------------------------------
+
+    /// Get the damage of the weapon (per bullet)
+    fn get_damage(&self) -> u16 {
+        match self {
+            WeaponType::Plasma => 10,
+            WeaponType::Laser => 1,
+            WeaponType::Rocket => 100,
+            WeaponType::Missile => 40,
+            WeaponType::Railgun => 127,
+            _ => 0,
+        }
+    }
+
+
+    /// Get the cadence of the weapon (bullets per second)
+    fn get_cadence(&self) -> u16 {
+        match self {
+            WeaponType::Plasma => 3,
+            WeaponType::Laser => 32,
+            WeaponType::Missile => 2,
+            WeaponType::Rocket | WeaponType::Railgun => 1,
+            _ => 0,
+        }
+    }
+
+
+    /// Get the magazine size of the weapon
+    fn get_magazine_size(&self) -> u16 {
+        match self {
+            WeaponType::Plasma => 21,
+            WeaponType::Laser => 200,
+            WeaponType::Rocket => 2,
+            WeaponType::Missile => 5,
+            WeaponType::Railgun => 1,
+            _ => 0,
+        }
+    }
+
+
+    /// Get the reload time of the weapon (in seconds)
+    fn get_reload_time(&self) -> u16 {
+        match self {
+            WeaponType::Plasma => 3,
+            WeaponType::Laser => 5,
+            WeaponType::Rocket => 5,
+            WeaponType::Missile => 5,
+            WeaponType::Railgun => 30,
+            _ => 0,
+        }
+    }
+
 }
 
 
-// implement the Display trait for the WeaponType enum
+/// Implement the [`Debug`] trait for the [`WeaponType`] enum
+impl fmt::Debug for WeaponType {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        let mut debug_str: String = String::from(&format!("Weapon {} {{\n", terminal::set_fg(&self.to_string(), "green")));
+        self.get_stats().iter().for_each(|(key, value)| {debug_str += &format!("{:>16}: {:>4}\n", key, value);});
+        write!(f, "{}}}", debug_str)
+    }
+}
+
+
+/// Implement the [`Display`] trait for the [`WeaponType`] enum
 impl fmt::Display for WeaponType {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        // let mut debug_str: String = String::from(&format!("{} {{\n", terminal::set_fg(&terminal::get_type_of(&self).split("::").last().unwrap(), "green")));
-        let mut debug_str: String = String::from(&format!("{} {{\n", terminal::set_fg(&self.get_type(), "green")));
-        // let mut debug_str: String = String::from(&format!("{} {{\n", terminal::set_fg(&), "green")));
-        self.get_stats().iter().for_each(|(key, value)| {debug_str += &format!("    {:>13}: {:>3}\n", key, value);});
-        write!(f, "{}}}", debug_str)
+        write!(f, "{}", terminal::set_fg(&self.get_type(), "green"))
     }
 }
