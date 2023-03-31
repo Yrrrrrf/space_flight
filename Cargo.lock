@@ -1255,9 +1255,9 @@ dependencies = [
 
 [[package]]
 name = "cpal"
-version = "0.15.1"
+version = "0.15.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f1241019dec4a73f874bdf6fe3467a8478b47cecaf79435f7acb01f107ab41b1"
+checksum = "6d959d90e938c5493000514b446987c07aed46c668faaa7d34d6c7a67b1a578c"
 dependencies = [
  "alsa",
  "core-foundation-sys 0.8.3",
@@ -1275,7 +1275,7 @@ dependencies = [
  "wasm-bindgen",
  "wasm-bindgen-futures",
  "web-sys",
- "windows 0.44.0",
+ "windows 0.46.0",
 ]
 
 [[package]]
@@ -2991,7 +2991,7 @@ dependencies = [
 
 [[package]]
 name = "space_flight"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "bevy",
  "image",
@@ -3075,9 +3075,9 @@ dependencies = [
 
 [[package]]
 name = "taffy"
-version = "0.3.9"
+version = "0.3.10"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "65a1b5410ff9135cf5072b13ef0f8a25aa004339ad5ceca9dcb33dcf8c3af1f0"
+checksum = "82b26705069936de5f8a8b52e2873a76a6e0e35f08ae8dd34832804e4b6fa840"
 dependencies = [
  "arrayvec",
  "num-traits",
@@ -3669,6 +3669,15 @@ checksum = "9e745dab35a0c4c77aa3ce42d595e13d2003d6902d6b08c9ef5fc326d08da12b"
 dependencies = [
  "windows-implement",
  "windows-interface",
+ "windows-targets",
+]
+
+[[package]]
+name = "windows"
+version = "0.46.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "cdacb41e6a96a052c6cb63a144f24900236121c6f63f4f8219fef5977ecb0c25"
+dependencies = [
  "windows-targets",
 ]
 

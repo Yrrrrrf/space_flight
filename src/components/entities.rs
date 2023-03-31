@@ -18,9 +18,7 @@ pub struct Player {
     pub health: i8,  // -128 to 127
     pub shield: i8,
     pub weapon: i8,
-    pub speed: f32,
-    pub score: i8,
-    pub lives: i8,
+    pub speed: f32,  // 32-bit float
 }
 
 
@@ -30,20 +28,16 @@ pub struct Enemy {
     pub shield: i8,
     pub weapon: i8,
     pub speed: f32,
-    pub score: i8,
-    pub lives: i8,
 }
 
 
 impl Entity for Player {
     fn new() -> Self {  // instantiate a new player
         Self {
-            health: 100,
-            shield: 100,
+            health: 100,  // 100hp
+            shield: 0,  // no shield
             weapon: 100,
             speed: 100.0,
-            score: 0,
-            lives: 3,
         }
     }
 
